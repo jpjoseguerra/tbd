@@ -1,0 +1,10 @@
+
+SELECT vol.id, vol.nombre, rnk.id_tarea, tr.nombre, tr.descrip, rnk.puntaje
+FROM voluntario vol
+JOIN ranking rnk
+ON rnk.id_voluntario = vol.id
+JOIN tarea tr
+ON tr.id = rnk.id_tarea
+WHERE tr.id = *"ID_TAREA"*
+ORDER BY rnk.puntaje DESC
+LIMIT *"QUANTITY"*
