@@ -4,6 +4,7 @@ import json
 import random
 import time 
 import datetime
+import csv
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -32,24 +33,23 @@ def get_data(table, dbName):
     
     return obj_ids
 
-def fill_voluntario(quantity, dbName):
-
-    names = ["Ana", "Enzo", "Hugo", "Juan", "Lara", "Leo", "Luz", "Sara", "Hector", "Helena", "Helena", "Lucia", "Manuel", "Mariana", "Martin", "Martin", "Isabel", "Lucia", "Marta", "Moises", "Raquel", "Samuel", "Alberto", "Felipe", "Beatriz", "Daniela", "Claudia", "Laura", "Daniel", "Pablo", "Alvaro", "Mateo", "Matias", "Diego", "David", "Sergio", "Marcos", "Carlos", "Miguel", "Lucas", "Mario", "Valentina"]
-
-    last_names = ["Gonzalez", "Rodriguez", "Gomez", "Lopez", "Fernandez", "Romero", "Sanchez", "Garcia", "Perez", "Martinez", "Diaz", "Sosa", "Torres", "Alvarez", "Ruiz", "Ramirez", "Acosta", "Suarez", "Gutierrez", "Aguire", "Montes", "Gimenez", "Rojas", "Pereyra", "Molina", "Castro", "Ortiz", "Silva", "Juarez", "Ojeda", "Ponce", "Arias", "Figueroa", "Ramos", "Correa", "Hernandez", "Escobar", "Mendoza", "Caroca", "Muena", "Campos", "Soto"]
-
+def fill_voluntario(dbName):
     try:	
         connection = get_connection_db(dbName)
         cursor = connection.cursor()
-
-        for i in range(0, quantity):
-            full_name = random.choice(names) + " " + random.choice(last_names)
-            birthday = rand_date("1970-01-01", "2002-01-01")
-            cursor.execute("INSERT INTO voluntario (nombre, fnacimiento) VALUES (%s, %s)",
-                            ( full_name, birthday ) )
+        
+        with open('TBD VOLUNTARIOS.csv', newline='') as archivo:
+            lector = csv.DictReader(archivo)
+            cant_voluntarios = 0
+            for fila in lector:
+                #contador para cantidad de voluntarios
+                cant_voluntarios += 1
+                nombre_completo = fila['nombre'] + ' ' + fila['apellido']
+            
+                cursor.execute("INSERT INTO voluntario (nombre, email, ubicacion) VALUES (%s, %s, ST_GeomFromText('POINT(%s %s)', 4326))", (nombre_completo, fila['email'], float(fila['longitude']), float(fila['latitude'])))
 
         connection.commit()
-        print("Se agregaron " + str(quantity) + " registros en la tabla voluntario")     
+        print("Se registraron " + str(cant_voluntarios) + " personas en la tabla de voluntarios")     
 
 
     except (Exception, psycopg2.Error) as error :
@@ -392,7 +392,7 @@ def fill_ranking(quantity, dbName):
                       
 
 dbName_f = "postgres"
-fill_voluntario(1000, dbName_f)
+fill_voluntario(dbName_f)
 fill_institucion(dbName_f)
 fill_habilidad(dbName_f)
 fill_estado_tarea(dbName_f)

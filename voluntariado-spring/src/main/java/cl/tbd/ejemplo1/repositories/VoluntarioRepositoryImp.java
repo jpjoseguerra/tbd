@@ -1,6 +1,7 @@
 package cl.tbd.ejemplo1.repositories;
 
 import cl.tbd.ejemplo1.models.Voluntario;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
@@ -26,7 +27,7 @@ public class VoluntarioRepositoryImp implements VoluntarioRepository {
     @Override
     public List<Voluntario> getAllVoluntarios() {
         try(Connection conn = sql2o.open()){
-            return conn.createQuery("select * from voluntario")
+            return conn.createQuery("SELECT id, nombre, email, ST_X(ST_AsText(ubicacion)) AS longitud, ST_Y(ST_AsText(ubicacion)) AS latitud FROM voluntario")
                     .executeAndFetch(Voluntario.class);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -37,11 +38,14 @@ public class VoluntarioRepositoryImp implements VoluntarioRepository {
     @Override
     public Voluntario createVoluntario(Voluntario voluntario) {
         try(Connection conn = sql2o.open()){
-            long insertedId = (long) conn.createQuery("INSERT INTO voluntario (nombre, fnacimiento) values (:vNombre, :vNacimiento)", true)
-                    .addParameter("vNombre", voluntario.getNombre())
-                    .addParameter("vNacimiento", voluntario.getFnacimiento())
-                    .executeUpdate().getKey();
-                    voluntario.setId(insertedId);
+            String insert = "INSERT INTO voluntario (nombre, email, ubicacion) values (:vol_nombre, :vol_email, ST_GeomFromText(:vol_punto, 4326)))";
+            String punto = "POINT(" + voluntario.getLongitud() + " " + voluntario.getLatitud() + ")";
+            long insertedId = (long) conn.createQuery(insert, true)
+                .addParameter("vol_nombre", voluntario.getNombre())
+                .addParameter("vol_punto", punto)
+                .addParameter("vol_email", voluntario.getEmail())
+                .executeUpdate().getKey();
+            voluntario.setId(insertedId);
             return voluntario;        
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -53,10 +57,13 @@ public class VoluntarioRepositoryImp implements VoluntarioRepository {
     @Override
     public Voluntario updateVoluntario(Voluntario voluntario, long id) {
         try(Connection conn = sql2o.open()){
-            conn.createQuery("UPDATE voluntario SET nombre = :vNombre, fnacimiento = :vNacimiento WHERE id = :updateId")
-                .addParameter("updateId", id)
-                .addParameter("vNombre", voluntario.getNombre())
-                .addParameter("vNacimiento", voluntario.getFnacimiento())
+            String update = "UPDATE voluntario SET nombre = :vol_nombre, email = :vol_email, location = ST_GeomFromText(:vol_punto, 4326) WHERE id = :id_update";
+            String punto = "POINT(" + voluntario.getLongitud() + " " + voluntario.getLatitud() + ")";
+            conn.createQuery(update, true)
+                .addParameter("id_update", id)
+                .addParameter("vol_nombre", voluntario.getNombre())
+                .addParameter("vol_punto", punto)
+                .addParameter("vol_email", voluntario.getEmail())
                 .executeUpdate();
             voluntario.setId(id);
             return voluntario;        
@@ -80,3 +87,4 @@ public class VoluntarioRepositoryImp implements VoluntarioRepository {
         }
     }
 }
+
