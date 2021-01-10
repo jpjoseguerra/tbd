@@ -18,7 +18,7 @@ public class EmergenciaRepositoryImp implements EmergenciaRepository {
     @Override
     public List<Emergencia> getAllEmergencias() {
         try(Connection conn = sql2o.open()){
-            return conn.createQuery("SELECT * FROM emergencia")
+            return conn.createQuery("SELECT id, nombre, descrip, finicio, ffin, id_institucion, ST_X(ST_AsText(ubicacion)) AS longitud, ST_Y(ST_AsText(ubicacion)) AS latitud FROM emergencia")
                     .executeAndFetch(Emergencia.class);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -29,14 +29,17 @@ public class EmergenciaRepositoryImp implements EmergenciaRepository {
     @Override
     public Emergencia createEmergencia(Emergencia emergencia) {
         try(Connection conn = sql2o.open()){
-            long insertedId = (long) conn.createQuery("INSERT INTO emergencia (nombre, descrip, finicio, ffin, id_institucion) values (:eNombre, :eDescrip, :eInicio, :eFin, :idIns)", true)
-                    .addParameter("eNombre", emergencia.getNombre())
-                    .addParameter("eDescrip", emergencia.getDescrip())
-                    .addParameter("eInicio", emergencia.getFinicio())
-                    .addParameter("eFin", emergencia.getFfin())
-                    .addParameter("idIns", emergencia.getId_institucion())
-                    .executeUpdate().getKey();
-                    emergencia.setId(insertedId);
+            String insert = "INSERT INTO emergencia (nombre, descrip, finicio, ffin, id_institucion, ubicacion) values (:eme_nombre, :eme_descrip, :eme_inicio, :eme_fin, :id_ins, ST_GeomFromText(:eme_punto, 4326))";
+            String punto = "POINT(" + emergencia.getLongitud() + " " + emergencia.getLatitud() + ")";
+            long insertedId = (long) conn.createQuery(insert, true)
+                .addParameter("eme_nombre", emergencia.getNombre())
+                .addParameter("eme_descrip", emergencia.getDescrip())
+                .addParameter("eme_inicio", emergencia.getFinicio())
+                .addParameter("eme_fin", emergencia.getFfin())
+                .addParameter("id_ins", emergencia.getId_institucion())
+                .addParameter("eme_punto", punto)
+                .executeUpdate().getKey();
+            emergencia.setId(insertedId);
             return emergencia;        
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -48,13 +51,16 @@ public class EmergenciaRepositoryImp implements EmergenciaRepository {
     @Override
     public Emergencia updateEmergencia(Emergencia emergencia, long id) {
         try(Connection conn = sql2o.open()){
-            conn.createQuery("UPDATE emergencia SET nombre = :newNombre, descrip = :newDescrip, finicio = :newFinicio, ffin = :newFfin, id_institucion = :newInstitucion WHERE id = :updateId")
-                .addParameter("updateId", id)
-                .addParameter("newNombre", emergencia.getNombre())
-                .addParameter("newDescrip", emergencia.getDescrip())
-                .addParameter("newFinicio", emergencia.getFinicio())
-                .addParameter("newFfin", emergencia.getFfin())
-                .addParameter("newInstitucion", emergencia.getId_institucion())
+            String update = "UPDATE emergencia SET nombre = :eme_nombre, descrip = :eme_descrip, finicio = :eme_inicio, ffin = :eme_fin, id_institucion = :id_ins, location =  ST_GeomFromText(:eme_punto, 4326) WHERE id = :id_update)";
+            String punto = "POINT(" + emergencia.getLongitud() + " " + emergencia.getLatitud() + ")";
+            conn.createQuery(update, true)
+                .addParameter("id_update", id)
+                .addParameter("eme_nombre", emergencia.getNombre())
+                .addParameter("eme_descrip", emergencia.getDescrip())
+                .addParameter("eme_inicio", emergencia.getFinicio())
+                .addParameter("eme_fin", emergencia.getFfin())
+                .addParameter("id_ins", emergencia.getId_institucion())
+                .addParameter("eme_punto", punto)
                 .executeUpdate();
             emergencia.setId(id);
             return emergencia;        
@@ -77,9 +83,4 @@ public class EmergenciaRepositoryImp implements EmergenciaRepository {
             return null;
         }
     }
-
-
-
-
-
 }

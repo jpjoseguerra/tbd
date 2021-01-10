@@ -1,7 +1,7 @@
 package cl.tbd.ejemplo1.models;
 
 import java.sql.Date;
-
+//latitud, longitud
 public class Tarea {
     private long id;
     private String nombre;
@@ -12,6 +12,8 @@ public class Tarea {
     private Date ffin;
     private long id_emergencia;
     private long id_estado;
+    private double longitud;
+    private double latitud;
 
     public long getId(){
         return id;
@@ -85,4 +87,19 @@ public class Tarea {
         this.id_estado = id_estado;
     }
     
+    public double getLongitud(){
+        return longitud;
+    }
+
+    public void setLongitud(double longitud){
+        this.longitud = longitud;
+    }
+
+    public double getLatitud(){
+        return latitud;
+    }
+
+    public void setLatitud(double latitud){
+        this.latitud = latitud;
+    }
 }

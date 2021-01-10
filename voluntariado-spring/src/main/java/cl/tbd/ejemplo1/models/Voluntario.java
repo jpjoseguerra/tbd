@@ -5,7 +5,9 @@ public class Voluntario {
     private String nombre;
     private String email;
     private double longitud;
-    private double latitud; 
+    private double latitud;
+    
+    //latitud longitud
 
     public long getId() {
         return id;

@@ -9,7 +9,9 @@ public class Emergencia {
     private Date finicio;
     private Date ffin;
     private long id_institucion;
-
+    private double longitud;
+    private double latitud;
+//latitud, longitud
     public long getId(){
         return id;
     }
@@ -56,5 +58,21 @@ public class Emergencia {
 
     public void setId_institucion(long id_institucion){
         this.id_institucion = id_institucion;
+    }
+
+    public double getLongitud(){
+        return longitud;
+    }
+
+    public void setLongitud(double longitud){
+        this.longitud = longitud;
+    }
+
+    public double getLatitud(){
+        return latitud;
+    }
+
+    public void setLatitud(double latitud){
+        this.latitud = latitud;
     }
 }

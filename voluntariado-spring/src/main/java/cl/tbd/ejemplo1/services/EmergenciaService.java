@@ -47,6 +47,5 @@ public class EmergenciaService {
     @DeleteMapping("/emergencias/{id}")
     public List<Emergencia> deleteEmergencia(@PathVariable long id){
         return emergenciaRepository.deleteEmergencia(id);
-    }
-    
+    }    
 }

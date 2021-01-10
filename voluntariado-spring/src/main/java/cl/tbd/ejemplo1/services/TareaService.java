@@ -1,6 +1,7 @@
 package cl.tbd.ejemplo1.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,5 +49,14 @@ public class TareaService {
     public List<Tarea> deleteTareas(@PathVariable long id){
         return tareaRepository.deleteTarea(id);
     }
-    
+
+    @GetMapping("/tareasPorIdEme/{id_eme}")
+    public List<Tarea> tareasPorIdEme(@PathVariable long id_eme) {
+        return tareaRepository.tareasPorIdEme(id_eme);
+    }
+    //servicio de tareas ordenadas
+    @GetMapping("/tareasOrdenadas/{id_eme}")
+    public List<Map<String, Object>> tareasOrdenadasPorDistancia(@PathVariable long id_eme){
+        return tareaRepository.tareasOrdenadasPorDistancia(id_eme);
+    }
 }
