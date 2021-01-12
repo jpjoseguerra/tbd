@@ -4,7 +4,12 @@ import router from './router'
 import store from './store'
 import axios from 'axios';
 
+import 'leaflet/dist/leaflet.css';
 import "./assets/style/style.scss";
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css'
+//import { Icon } from 'leaflet';
+
 
 Vue.config.productionTip = false
 
