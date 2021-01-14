@@ -1,34 +1,50 @@
 <template>
     <div class="row">
     <div class="col-4 container-fluid">
-        <h1>Agregar una emergencia</h1>
+        <h1>Agregar una tarea</h1>
         <form>
             <div>
                 <label for="name">Nombre</label>
-            <input type="text" id="nombre" v-model="newEmergencia.nombre">
+            <input type="text" id="nombre" v-model="newTarea.nombre">
+            </div>
+
+
+
+            <div>
+                <label for="name">Voluntarios requeridos</label>
+            <input type="text" id="nombre" v-model="newTarea.cant_vol_requeridos">
             </div>
 
             <div>
+                <label for="name">Voluntarios asignados</label>
+            <input type="text" id="nombre" v-model="newTarea.cant_vol_inscritos">
+            </div>
+
+
+
+
+            <div>
                 <label for="descrip">Descripción</label>
-            <input type="text" id="descrip" v-model="newEmergencia.descrip">
+            <input type="text" id="descrip" v-model="newTarea.descrip">
             </div>
 
             <div>
                 <label for="finicio">Fecha de inicio</label>
-            <input type="date" id="finicio" v-model="newEmergencia.finicio">
+            <input type="date" id="finicio" v-model="newTarea.finicio">
             </div>
 
             <div>
                 <label for="ffin">Fecha de termino</label>
-            <input type="date" id="ffin" v-model="newEmergencia.ffin">
+            <input type="date" id="ffin" v-model="newTarea.ffin">
             </div>
 
             <div>
-                <label for="id_institucion">Elegir la institución encargada</label>
-            <select id="id_institucion" v-model="newEmergencia.id_institucion">
-                <option v-bind:value="institution.id" v-for="(institution, index) in insts" :key="index">{{institution.nombre}}</option>
+                <label for="id_emergencia">Elegir la emergencia correspondiente</label>
+            <select id="id_emergencia" v-model="newTarea.id_emergencia">
+                <option v-bind:value="emergencia.id" v-for="(emergencia, index) in insts" :key="index">{{emergencia.nombre}}</option>
             </select>
             </div>
+
             <div class="form-group">
                 <label for="latitud">Latitud</label>
             <input class="form-control" :placeholder="ubicacion.lat" :readonly="ubicacion.lat" id="latitud">
@@ -42,7 +58,7 @@
             </div>
             <div class="info">
                 <h2>Objeto</h2>
-                <code>{{newEmergencia}}</code>
+                <code>{{newTarea}}</code>
                 <p class="message">
                     {{message}}
                 </p>
@@ -53,13 +69,13 @@
             <l-map :zoom="zoom" :center="center" @click="getUbicacion">
                 <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
                 <l-marker
-                    :key="'eme' + index"
-                    v-for="(eme, index) in emergencias"
-                    :lat-long="posicion(eme.latitud, eme.longitud)"             
+                    :key="'tar' + index"
+                    v-for="(tar, index) in tareas"
+                    :lat-long="posicion(tar.latitud, tar.longitud)"             
                 >
                 <l-icon
-                    :icon-size="emergencia_tamanio"
-                    :icon-url="emergencia_icono"
+                    :icon-size="tarea_tamanio"
+                    :icon-url="tarea_icono"
                 >
                 </l-icon>
                 </l-marker>       
@@ -71,8 +87,8 @@
 <script>
 
 import L from 'leaflet'
-import { LMap, LTileLayer, LMarker, LIcon } from 'vue2-leaflet'
-import emergencia_icono from '../assets/emergencia_icono.png'
+import { LMap, LTileLayer, LMarker, LIcon} from 'vue2-leaflet'
+import tarea_icono from '../assets/tarea_icono.png'
 
 export default {
     
@@ -82,13 +98,13 @@ export default {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStre,etMap</a> contributors',
             center: L.longitudLatitud(-33.561995, -70.562439),
             message:'',
-            newEmergencia:{},
+            newTarea:{},
             insts:[],
-            emergencias:[],
+            tareas:[],
             ubicacion: L.longitudLatitud(-33.561995, -70.562439),
             zoom: 7,
-            emergencia_icono: emergencia_icono,
-            emergencia_tamanio: [8, 8]
+            tarea_icono: tarea_icono,
+            tarea_tamanio: [18, 18]
         }
     },
     components: {
@@ -102,58 +118,69 @@ export default {
         posicion: function(lat, long){
             return L.longitudLatitud(lat, long);
         },
-        
         send:async function(){
             this.message = '';
-            this.newEmergencia.latitud = this.ubicacion.lat;
-            this.newEmergencia.longitud = this.ubicacion.long;
-            if(!this.newEmergencia.nombre){
-                this.message = 'ingrese un nombre'
+            this.newTarea.latitud = this.ubicacion.lat;
+            this.newTarea.longitud = this.ubicacion.long;
+            if(!this.newTarea.nombre){
+                this.message = 'ingrese un nombre valido'
                 return false
             }
-            if(!this.newEmergencia.descrip){
+            if(!this.newTarea.descrip){
                 this.message = 'ingrese una descripcion'
                 return false
             }
-            if(!this.newEmergencia.finicio){
-                this.message = 'ingrese una fecha de inicio'
+
+            if(!this.newTarea.cant_vol_requeridos){
+                this.message = 'ingrese cantidad de voluntarios requeridos valida'
                 return false
             }
-            if(!this.newEmergencia.ffin){
-                this.message = 'ingrese una fecha de termino'
+            if(!this.newTarea.cant_vol_inscritos){
+                this.message = 'ingrese una cantidad de voluntarios inscritos valida'
                 return false
             }
-            if(!this.newEmergencia.id_institucion){
-                this.message = 'ingrese la institucion encargada de la emergencia'
+
+
+
+            if(!this.newTarea.finicio){
+                this.message = 'ingrese la fecha de inicio'
+                return false
+            }
+            if(!this.newTarea.ffin){
+                this.message = 'ingrese la fecha de termino'
+                return false
+            }
+            if(!this.newTarea.id_emergencia){
+                this.message = 'ingrese una emergencia correspondiente'
                 return false
             }
             try {
-                var result = await this.$http.post('/emergencias', this.newEmergencia);
-                let emergencia = result.data;
-                this.message = `Se creó una nueva emergencia con id: ${emergencia.id}`;
-                this.newEmergencia = {};
+                var result = await this.$http.post('/tareas', this.newTarea);
+                let tarea = result.data;
+                this.message = `Se creó una nueva tarea con id: ${tarea.id}`;
+                this.newTarea = {};
             } catch (error) {
                 console.log('error', error)
-                this.message = 'no se ha podido crear la emergencia'
+                this.message = 'no se ha podido crear la tarea'
             }
-            this.todasEmergencias(); 
+            this.todasTareas(); 
             
         },
         
-        todasInstituciones:async function(){
+        todasEmergenciass:async function(){
             try {
-                let response = await this.$http.get('/instituciones');
+                let response = await this.$http.get('/emergencias');
                 this.insts  = response.data;
                 console.log(response);
             } catch (error) {
                 console.log('error', error);
             }
         },
-        todasEmergencias: async function(){
+        todasTareas: async function(){
              try {
-                let response = await this.$http.get('/emergencias');
-                this.emergencias  = response.data;
-                console.log(this.emergencias);
+                let response = await this.$http.get('/tareas');
+                this.tareas  = response.data;
+                console.log(this.tareas);
             } catch (error) {
                 console.log('error', error);
             }
@@ -163,8 +190,8 @@ export default {
       },         
     },
     created:function(){
-        this.todasInstituciones();
-        this.todasEmergencias();
+        this.todasEmergenciass();
+        this.todasTareas();
     }
 }
 </script>

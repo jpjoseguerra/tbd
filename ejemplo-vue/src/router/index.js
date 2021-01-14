@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Emergencias from '../views/Emergencias.vue'
 import NewEmergencia from '../views/NewEmergencia.vue'
+import NewTarea from '../views/NewTarea.vue'
+
 
 Vue.use(VueRouter)
 
@@ -22,6 +24,14 @@ Vue.use(VueRouter)
     name: 'NewEmergencia',
     component: NewEmergencia
   },
+
+  {
+    path: '/new-tarea',
+    name: 'NewTarea',
+    component: NewTarea
+  },
+  
+ 
   {
     path: '/about',
     name: 'About',
