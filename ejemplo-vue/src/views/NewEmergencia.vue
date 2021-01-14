@@ -35,7 +35,7 @@
             </div>
             <div class="form-group">
                 <label for="longitud">Longitud</label>
-            <input class="form-control" :placeholder="ubicacion.long" :readonly="ubicacion.long" id="longitud">
+            <input class="form-control" :placeholder="ubicacion.lng" :readonly="ubicacion.lng" id="longitud">
             </div>
             <div>
                 <button type="button" @click="send">Crear</button>
@@ -55,7 +55,7 @@
                 <l-marker
                     :key="'eme' + index"
                     v-for="(eme, index) in emergencias"
-                    :lat-long="posicion(eme.latitud, eme.longitud)"             
+                    :lat-lng="posicion(eme.latitud, eme.longitud)"             
                 >
                 <l-icon
                     :icon-size="emergencia_tamanio"
@@ -80,12 +80,12 @@ export default {
         return{
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStre,etMap</a> contributors',
-            center: L.longitudLatitud(-33.561995, -70.562439),
+            center: L.latLng(-33.561995, -70.562439),
             message:'',
             newEmergencia:{},
             insts:[],
             emergencias:[],
-            ubicacion: L.longitudLatitud(-33.561995, -70.562439),
+            ubicacion: L.latLng(-33.561995, -70.562439),
             zoom: 7,
             emergencia_icono: emergencia_icono,
             emergencia_tamanio: [8, 8]
@@ -99,14 +99,14 @@ export default {
     },
     methods:{
         
-        posicion: function(lat, long){
-            return L.longitudLatitud(lat, long);
+        posicion: function(lat, lng){
+            return L.latLng(lat, lng);
         },
         
         send:async function(){
             this.message = '';
             this.newEmergencia.latitud = this.ubicacion.lat;
-            this.newEmergencia.longitud = this.ubicacion.long;
+            this.newEmergencia.longitud = this.ubicacion.lng;
             if(!this.newEmergencia.nombre){
                 this.message = 'ingrese un nombre'
                 return false
@@ -159,7 +159,7 @@ export default {
             }
         },
         getUbicacion: function(e){
-          this.ubicacion = e.longitudLatitud;
+          this.ubicacion = e.latlng;
       },         
     },
     created:function(){

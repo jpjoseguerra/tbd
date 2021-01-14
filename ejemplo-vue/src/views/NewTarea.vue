@@ -51,7 +51,7 @@
             </div>
             <div class="form-group">
                 <label for="longitud">Longitud</label>
-            <input class="form-control" :placeholder="ubicacion.long" :readonly="ubicacion.long" id="longitud">
+            <input class="form-control" :placeholder="ubicacion.lng" :readonly="ubicacion.lng" id="longitud">
             </div>
             <div>
                 <button type="button" @click="send">Crear</button>
@@ -71,7 +71,7 @@
                 <l-marker
                     :key="'tar' + index"
                     v-for="(tar, index) in tareas"
-                    :lat-long="posicion(tar.latitud, tar.longitud)"             
+                    :lat-lng="posicion(tar.latitud, tar.longitud)"             
                 >
                 <l-icon
                     :icon-size="tarea_tamanio"
@@ -96,12 +96,12 @@ export default {
         return{
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStre,etMap</a> contributors',
-            center: L.longitudLatitud(-33.561995, -70.562439),
+            center: L.latLng(-33.561995, -70.562439),
             message:'',
             newTarea:{},
             insts:[],
             tareas:[],
-            ubicacion: L.longitudLatitud(-33.561995, -70.562439),
+            ubicacion: L.latLng(-33.561995, -70.562439),
             zoom: 7,
             tarea_icono: tarea_icono,
             tarea_tamanio: [18, 18]
@@ -115,13 +115,13 @@ export default {
     },
     methods:{
         
-        posicion: function(lat, long){
-            return L.longitudLatitud(lat, long);
+        posicion: function(lat, lng){
+            return L.latLng(lat, lng);
         },
         send:async function(){
             this.message = '';
             this.newTarea.latitud = this.ubicacion.lat;
-            this.newTarea.longitud = this.ubicacion.long;
+            this.newTarea.longitud = this.ubicacion.lng;
             if(!this.newTarea.nombre){
                 this.message = 'ingrese un nombre valido'
                 return false
@@ -186,7 +186,7 @@ export default {
             }
         },
         getUbicacion: function(e){
-          this.ubicacion = e.longitudLatitud;
+          this.ubicacion = e.latlng;
       },         
     },
     created:function(){
